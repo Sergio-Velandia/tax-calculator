@@ -1,0 +1,71 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: remove-all
+      image: alpine
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/bin/sh
+        rm -rf $(workspaces.source.path)/* $(workspaces.source.path)/.[!.]* || true
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: run-tests
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: install-and-test
+      image: node:18-alpine
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/bin/sh
+        npm install
+        npm test
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-image
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image-name
+      type: string
+  steps:
+    - name: build
+      image: gcr.io/kaniko-project/executor:latest
+      workingDir: $(workspaces.source.path)
+      args:
+        - --dockerfile=Dockerfile
+        - --context=$(workspaces.source.path)
+        - --destination=$(params.image-name)
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-to-cloud
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: image-name
+      type: string
+  steps:
+    - name: deploy
+      image: ibmcom/ibmcloud-cli
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/bin/sh
+        ibmcloud ce application update --name tax-calculator --image $(params.image-name) || \
+        ibmcloud ce application create --name tax-calculator --image $(params.image-name)
