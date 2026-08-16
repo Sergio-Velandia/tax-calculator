@@ -22,6 +22,7 @@ describe('Tax Calculator', function () {
     expect(calculateTax(-100)).toBeLessThanOrEqual(0);
   });
 
+<<<<<<< HEAD
   it('calcula correctamente justo en el límite de 10000', function () {
     expect(calculateTax(10000)).toEqual(500);
   });
@@ -30,4 +31,6 @@ describe('Tax Calculator', function () {
     expect(calculateTax(100000)).toEqual(15500);
   });
 
+=======
+>>>>>>> d1e8da70cd7f43fd142c38ae2500ec37c37edb89
 });

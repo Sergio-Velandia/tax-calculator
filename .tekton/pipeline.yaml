@@ -15,9 +15,23 @@ spec:
       type: string
 
   tasks:
+<<<<<<< HEAD
     - name: clone
       taskRef:
         name: git-clone
+=======
+    - name: init
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: clone
+      taskRef:
+        name: git-clone
+      runAfter: ["init"]
+>>>>>>> d1e8da70cd7f43fd142c38ae2500ec37c37edb89
       workspaces:
         - name: output
           workspace: pipeline-workspace
@@ -27,14 +41,21 @@ spec:
         - name: revision
           value: $(params.branch-name)
 
+<<<<<<< HEAD
     - name: npm-install
       taskRef:
         name: npm-install
+=======
+    - name: test
+      taskRef:
+        name: run-tests
+>>>>>>> d1e8da70cd7f43fd142c38ae2500ec37c37edb89
       runAfter: ["clone"]
       workspaces:
         - name: source
           workspace: pipeline-workspace
 
+<<<<<<< HEAD
     - name: jasmine-test
       taskRef:
         name: jasmine-test
@@ -47,6 +68,23 @@ spec:
       taskRef:
         name: build-image
       runAfter: ["jasmine-test"]
+=======
+    - name: build
+      taskRef:
+        name: build-image
+      runAfter: ["test"]
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      params:
+        - name: image-name
+          value: $(params.image-name)
+
+    - name: deploy
+      taskRef:
+        name: deploy-to-cloud
+      runAfter: ["build"]
+>>>>>>> d1e8da70cd7f43fd142c38ae2500ec37c37edb89
       workspaces:
         - name: source
           workspace: pipeline-workspace

@@ -12,6 +12,10 @@ function calculateTax(income) {
   return parseFloat(tax.toFixed(2));
 }
 
+<<<<<<< HEAD
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = calculateTax;
 }
+=======
+module.exports = calculateTax;
+>>>>>>> d1e8da70cd7f43fd142c38ae2500ec37c37edb89
